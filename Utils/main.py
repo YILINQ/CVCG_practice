@@ -1,6 +1,6 @@
 import cv2
 import mediapipe as mp
-from Face_detection_utils import FaceDetector
+from FaceDetectionUtils import FaceDetector
 from HandTrackingUtils import HandDetector
 
 
