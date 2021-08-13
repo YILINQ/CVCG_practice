@@ -3,7 +3,7 @@ import mediapipe as mp
 import time
 
 
-class handDetector():
+class HandDetector():
     def __init__(self, mode=False, max_hands=2, detectionConf=0.5, trackCon=0.5):
         self.mode = mode
         self.maxHands = max_hands
@@ -38,7 +38,7 @@ class handDetector():
         return lmList
 
 def main():
-    detector = handDetector(max_hands=1)
+    detector = HandDetector(max_hands=1)
 
     cap = cv2.VideoCapture(0)
     while True:
@@ -54,4 +54,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    pass
