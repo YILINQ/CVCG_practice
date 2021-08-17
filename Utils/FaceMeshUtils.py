@@ -8,6 +8,7 @@ pTime = 0
 mpDraw = mp.solutions.drawing_utils
 mpFaceMesh = mp.solutions.face_mesh
 faceMesh = mpFaceMesh.FaceMesh(max_num_faces=1)
+drawSpec = mpDraw.DrawingSpec(thickness=1, circle_radius=2)
 
 while True:
     success, img = cap.read()
@@ -16,7 +17,8 @@ while True:
     results = faceMesh.process(img)
     if results.multi_face_landmarks:
         for faceLms in results.multi_face_landmarks:
-            mpDraw.draw_landmarks(img, faceLms, mpFaceMesh.FACE_CONNECTIONS)
+            mpDraw.draw_landmarks(img, faceLms, mpFaceMesh.FACE_CONNECTIONS, landmark_drawing_spec=drawSpec,
+                                  connection_drawing_spec=drawSpec)
 
     cTime = time.time()
     fps = 1 / (cTime - pTime)
