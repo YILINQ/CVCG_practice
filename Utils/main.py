@@ -6,7 +6,7 @@ from HandTrackingUtils import HandDetector
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    HD = HandDetector(max_hands=2)
+    HD = HandDetector(max_hands=1)
     FD = FaceDetector()
     cap = cv2.VideoCapture(0)
 
