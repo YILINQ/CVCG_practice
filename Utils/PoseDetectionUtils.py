@@ -1,5 +1,7 @@
 import cv2
 import mediapipe as mp
+import math
+import numpy as np
 
 
 class PoseDetector:
@@ -27,29 +29,38 @@ class PoseDetector:
         return img
 
     def getPosition(self, img, draw=True):
-        lmList = []
+        self.lmList = []
         if self.results:
             for id, lm in enumerate(self.results.pose_landmarks.landmark):
                 h, w, c = img.shape
                 cx, cy = int(lm.x * w), int(lm.y * h)
-                lmList.append((id, cx, cy))
-                if draw:
+                self.lmList.append((id, cx, cy))
+                if draw and id > 10:
                     cv2.circle(img, (cx, cy), 5, (255, 0, 255), cv2.FILLED)
+        return self.lmList
 
+    def findAngle(self, img, p1, p2, p3, draw=True):
+        _, x1, y1 = self.lmList[p1]
+        _, x2, y2 = self.lmList[p2]
+        _, x3, y3 = self.lmList[p3]
 
-def main(Path):
-    cap = cv2.VideoCapture(Path)
-    detector = PoseDetector()
-    # img = cv2.imread('./shooting_motions_test/Jerry_shooting.jpg')
-    while True:
-        success, img = cap.read()
+        # Calculate Angle
+        angle = math.degrees(math.atan2(y3 - y2, x3 - x2) - math.atan2(y1 - y2, x1 - x2))
+        if angle < 0:
+            angle += 360
 
-        img = detector.findPose(img)
-        # lmList = detector.getPosition(img)
+        bar = np.interp(angle, (220, 310), (0, 50))
+        bar_sign = p1 % 2
+        if draw:
+            cv2.line(img, (x1, y1), (x2, y2), (255, 255, 255), 3)
+            cv2.line(img, (x2, y2), (x3, y3), (255, 255, 255), 3)
 
-        cv2.imshow("Image", img)
-        cv2.waitKey(100)
+            cv2.circle(img, (x1, y1), 10, (0, 0, 255), 2)
+            cv2.circle(img, (x2, y2), 10, (0, 0, 255), 2)
+            cv2.circle(img, (x3, y3), 10, (0, 0, 255), 2)
 
+            # cv2.putText(img, str(int(angle)), (x2-50, y2+50), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 2)
+        return angle
 
-if __name__ == "__main__":
-    main('../zihao_side_2.mp4')
+    def findDist(self, img, p1, p2):
+        pass
