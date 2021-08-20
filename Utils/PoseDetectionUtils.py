@@ -3,7 +3,7 @@ import mediapipe as mp
 
 
 class PoseDetector:
-    def __init__(self, mode=False, upBody=False, smooth=True, detectConf=0.5, trackingConf=0.5):
+    def __init__(self, mode=False, upBody=0, smooth=True, detectConf=0.5, trackingConf=0.5):
         self.mode = mode
         self.upBody = upBody
         self.smooth = smooth
@@ -11,7 +11,10 @@ class PoseDetector:
         self.trackingCon = trackingConf
 
         self.mpPose = mp.solutions.pose
-        self.pose = self.mpPose.Pose(self.mode, self.upBody, self.smooth, self.detectCon, self.trackingCon)
+        # self.pose = self.mpPose.Pose(static_image_mode=self.mode, model_complexity=self.upBody, smooth_landmarks=self.smooth,
+        #                              min_detection_confidence=self.detectCon, min_tracking_confidence=self.trackingCon )
+
+        self.pose = self.mpPose.Pose(min_detection_confidence=0.7)
         self.mpDraw = mp.solutions.drawing_utils
 
     def findPose(self, img, draw=True):
@@ -34,18 +37,19 @@ class PoseDetector:
                     cv2.circle(img, (cx, cy), 5, (255, 0, 255), cv2.FILLED)
 
 
-def main():
-    cap = cv2.VideoCapture(0)
+def main(Path):
+    cap = cv2.VideoCapture(Path)
     detector = PoseDetector()
+    # img = cv2.imread('./shooting_motions_test/Jerry_shooting.jpg')
     while True:
         success, img = cap.read()
 
         img = detector.findPose(img)
-        lmList = detector.getPosition(img)
+        # lmList = detector.getPosition(img)
 
         cv2.imshow("Image", img)
-        cv2.waitKey(1)
+        cv2.waitKey(100)
 
 
 if __name__ == "__main__":
-    main()
+    main('../zihao_side_2.mp4')
