@@ -7,6 +7,10 @@ from sklearn.model_selection import GridSearchCV
 from keras.wrappers.scikit_learn import KerasClassifier
 
 
+# 1. Collect face-eye image
+# 2. Vectorize eye image and build filter
+# 3. Build CNN to predict output
+
 def create_model():
     model = Sequential()
     model.add(Convolution2D(
