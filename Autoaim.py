@@ -4,8 +4,12 @@ import mediapipe as mp
 import numpy as np
 from pynput.mouse import Button, Controller
 from PIL import ImageGrab
-from
+from AppKit import NSScreen
 
+# print(NSScreen.mainScreen().frame().size.width)
+# print(NSScreen.mainScreen().frame().size.height)
+
+# 1792 1120
 # step 1: capture screen, pass info to model
 # step 2: take in image and detect pose
 # step 3: control mouse and fire
@@ -14,16 +18,21 @@ from
 
 
 # center box of aiming frame
-BOUNDING_BOX = {'left': 450, 'top': 250, 'width': 1000, 'height': 600}
 
 mouse_er = Controller()
 if __name__ == '__main__':
     # step 1
     PoseDetector = PoseDetector()
     while True:
-        img = ImageGrab.grab(bbox=(0, 0, 1280, 720))
+        img = ImageGrab.grab(bbox=(900, 500, 2700, 1620))
         img_np = np.array(img)
-        cv2.imshow('test', img_np)
+
+        img_test = cv2.cvtColor(img_np, cv2.COLOR_BGR2RGB)
+        pose_img = PoseDetector.findPose(img_test, draw=True)
+        landmark_list = PoseDetector.getPosition(img_test, draw=False)
+
+        print(landmark_list)
+        cv2.imshow('test', pose_img)
         cv2.waitKey(1)
 
         # step 3
