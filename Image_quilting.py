@@ -110,6 +110,19 @@ def quilting(image, block_size, num_block, mode="random", smooth_factor=5):
     cv2.waitKey(0)
 
 
+def main():
+    # img_path, block_size, num_block, mode
+    try:
+        print(len(sys.argv))
+        assert len(sys.argv) == 5
+        quilting(image=sys.argv[1], block_size=int(sys.argv[2]), num_block=int(sys.argv[3]), mode=sys.argv[4])
+    except:
+        print("Usage: python image_quilting_texture.py [img_path] [block_size] [num_block] [mode]")
+
+
 if __name__ == "__main__":
-    quilting('/Users/yilin/Desktop/CV_and_CG_projects/Hand_Face_Pose_detection/strawberry_test.jpeg', block_size=100,
-             num_block=5, mode="cut")
+    import sys
+    import os
+    import argparse
+
+    main()
