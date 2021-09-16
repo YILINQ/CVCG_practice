@@ -48,14 +48,14 @@ def cut_path(errors):
 
         if current_length == h:
             return path
-        for delta in range(-1, 0):
+        for delta in range(-1, 2):
             next_index = current_index + delta
             if 0 <= next_index < w:
                 if (current_length, next_index) not in visited:
                     cum_error = error + errors[current_length, next_index]
                     heapq.heappush(pq, (cum_error, path + [next_index]))
                     visited.add((current_length, next_index))
-
+    return list(visited)
 
 def min_cut_path(patch, overlap, result, y, x):
     patch = patch.copy()
@@ -97,6 +97,7 @@ def quilting(image, block_size, num_block, mode="random", smooth_factor=5):
                 if mode == "best":
                     patch = best_patch(texture, block_size, overlap, y, x, result)
                 if mode == "cut":
+                    result = result.astype(np.uint8)
                     patch = best_patch(texture, block_size, overlap, y, x, result)
                     patch = min_cut_path(patch, overlap, result, y, x)
             # dummy statement
