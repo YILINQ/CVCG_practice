@@ -48,4 +48,4 @@ def generator():
     return model
 
 
-print(generator())
+print(generator().summary())
