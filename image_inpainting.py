@@ -83,6 +83,12 @@ def discriminator():
 # result = test_discriminator(test_model)
 # print(result)
 
+# cross-entropy v.s. MSE:
+# they are both good for classification problem, especially binary classification
+# MSE with softmax might have very slow rate of convergence at the training starts
+# while cross-entropy performs well and smooth
+
+
 def G_loss(output):
     # generator loss is simply the cross entropy between prediction and 1
     # it represents how well the generator "cheated" the discriminator
