@@ -4,6 +4,7 @@ import imageio
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import PIL
 import tensorflow as tf
 from tensorflow.keras import layers
@@ -48,4 +49,14 @@ def generator():
     return model
 
 
-print(generator().summary())
+def generate_test_image():
+    test_generator = generator()
+
+    noise = tf.random.normal([1, 100])
+    generated_image = test_generator(noise, training=False)
+
+    plt.imshow(generated_image[0, :, :, 0], cmap='gray')
+    plt.show()
+
+
+generate_test_image()
