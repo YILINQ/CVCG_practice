@@ -49,14 +49,52 @@ def generator():
     return model
 
 
-def generate_test_image():
+def generate_test_image(show=False):
     test_generator = generator()
 
     noise = tf.random.normal([1, 100])
     generated_image = test_generator(noise, training=False)
 
-    plt.imshow(generated_image[0, :, :, 0], cmap='gray')
-    plt.show()
+    if show:
+        plt.imshow(generated_image[0, :, :, 0], cmap='gray')
+        plt.show()
+    return generated_image
 
 
-generate_test_image()
+def discriminator():
+    model = tf.keras.Sequential()
+    model.add(layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same',
+                            input_shape=[28, 28, 1]))
+    model.add(layers.LeakyReLU())
+    model.add(layers.Dropout(0.3))
+
+    model.add(layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same'))
+    model.add(layers.LeakyReLU())
+    model.add(layers.Dropout(0.3))
+
+    model.add(layers.Flatten())
+    model.add(layers.Dense(1))
+
+    return model
+
+
+# test_discriminator = discriminator()
+# test_model = generate_test_image()
+# result = test_discriminator(test_model)
+# print(result)
+
+def G_loss(output):
+    # generator loss is simply the cross entropy between prediction and 1
+    # it represents how well the generator "cheated" the discriminator
+    cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+    return cross_entropy(tf.ones_like(output), output)
+
+
+def D_loss(real, fake):
+    # real represents the prediction of discriminator over real images
+    # fake represents the prediction of discriminator over fake images
+    # total loss is the sum of cross entropy of real and fake
+    cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+    real_loss = cross_entropy(tf.ones_like(real), real)
+    fake_loss = cross_entropy(tf.ones_like(fake), fake)
+    return real_loss + fake_loss
