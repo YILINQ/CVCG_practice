@@ -18,6 +18,10 @@ train_images = (train_images - 127.5) / 127.5  # Normalize the images to [-1, 1]
 
 BUFFER_SIZE = 60000
 BATCH_SIZE = 256
+noise_dim = 100
+num_examples_to_generate = 16
+
+seed = tf.random.normal([num_examples_to_generate, noise_dim])
 
 
 def data_preprocess():
@@ -106,7 +110,7 @@ def D_loss(real, fake):
     return real_loss + fake_loss
 
 
-def train_step(images, noise_dim=100):
+def train_step(images, G_opt, D_opt, noise_dim=100):
     noise = tf.random.normal([BATCH_SIZE, noise_dim])
     with tf.GradientTape() as gen_tape, tf.GradientTape() as dis_tape:
         generator = generator_model()
@@ -120,3 +124,28 @@ def train_step(images, noise_dim=100):
         dis_loss = D_loss(real_output, fake_output)
     G_gradient = gen_tape.gradient(gen_loss, generator.trainable_variables)
     D_gradient = dis_tape.gradient(dis_loss, generator.trainable_variables)
+    G_opt.apply_gradients(zip(G_gradient, generator.trainable_variables))
+    D_opt.apply_gradients(zip(D_gradient, discriminator.trainable_variables))
+    return generator, discriminator
+
+
+def train(dataset, epochs):
+    G_opt = tf.keras.optimizers.Adam(1e-4)
+    D_opt = tf.keras.optimizers.Adam(1e-4)
+    for epoch in range(epochs):
+        start = time.time()
+        for image_batch in dataset:
+            G, D = train_step(image_batch, G_opt, D_opt, 100)
+            display.clear_output(wait=True)
+            save_image(G, epoch + 1, seed)
+    display.clear_output(wait=True)
+
+
+def save_image(model, epoch, test):
+    pred = model(test, training=False)
+    pic = plt.figure(figsize=(4, 4))
+    for i in range(pred.shape[0]):
+        plt.subplot(4, 4, i + 1)
+        plt.imshow(pred[i, :, :, 0] * 127.5 + 127.5, cmap='gray')
+        plt.axis('off')
+    plt.show()
