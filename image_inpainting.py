@@ -148,4 +148,5 @@ def save_image(model, epoch, test):
         plt.subplot(4, 4, i + 1)
         plt.imshow(pred[i, :, :, 0] * 127.5 + 127.5, cmap='gray')
         plt.axis('off')
+    plt.savefig('image_at_epoch_{:04d}.png'.format(epoch))
     plt.show()
