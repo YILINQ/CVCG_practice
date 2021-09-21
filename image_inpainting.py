@@ -25,7 +25,7 @@ def data_preprocess():
     return train_dataset
 
 
-def generator():
+def generator_model():
     model = tf.keras.Sequential()
     model.add(layers.Dense(7 * 7 * 256, use_bias=False, input_shape=(100,)))
     model.add(layers.BatchNormalization())
@@ -50,7 +50,7 @@ def generator():
 
 
 def generate_test_image(show=False):
-    test_generator = generator()
+    test_generator = generator_model()
 
     noise = tf.random.normal([1, 100])
     generated_image = test_generator(noise, training=False)
@@ -61,7 +61,7 @@ def generate_test_image(show=False):
     return generated_image
 
 
-def discriminator():
+def discriminator_model():
     model = tf.keras.Sequential()
     model.add(layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same',
                             input_shape=[28, 28, 1]))
@@ -104,3 +104,19 @@ def D_loss(real, fake):
     real_loss = cross_entropy(tf.ones_like(real), real)
     fake_loss = cross_entropy(tf.ones_like(fake), fake)
     return real_loss + fake_loss
+
+
+def train_step(images, noise_dim=100):
+    noise = tf.random.normal([BATCH_SIZE, noise_dim])
+    with tf.GradientTape() as gen_tape, tf.GradientTape() as dis_tape:
+        generator = generator_model()
+        discriminator = discriminator_model()
+        generated_images = generator(noise, training=True)
+
+        real_output = discriminator(images, training=True)
+        fake_output = discriminator(generated_images, training=True)
+
+        gen_loss = G_loss(fake_output)
+        dis_loss = D_loss(real_output, fake_output)
+    G_gradient = gen_tape.gradient(gen_loss, generator.trainable_variables)
+    D_gradient = dis_tape.gradient(dis_loss, generator.trainable_variables)
