@@ -8,12 +8,19 @@ def do():
     print('---done---')
 
 
-processes = []
+if __name__ == "__main__":
+    processes = []
 
-for _ in range(10):
-    p = multiprocessing.Process(target=do)
-    p.start()
-    processes.append(p)
+    start = time.perf_counter()
 
-for i in range(len(processes)):
-    processes[i].join()
+    for _ in range(10):
+        p = multiprocessing.Process(target=do)
+        p.start()
+        processes.append(p)
+
+    for p in processes:
+        p.join()
+
+    finish = time.perf_counter()
+
+    print(finish - start)
